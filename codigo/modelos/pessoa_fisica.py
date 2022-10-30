@@ -1,3 +1,4 @@
+from controladores.controlador_pessoa import ControladorPessoa, PessoaJaCadastradaException
 from pessoa import Pessoa
 from cpf import Cpf
 
@@ -16,8 +17,15 @@ class PessoaFisica(Pessoa):
 
     @cpf.setter
     def cpf(self, cpf: Cpf):
+        if cpf in ControladorPessoa.pessoas_fisicas:
+            raise PessoaJaCadastradaException
+
         if isinstance(cpf, Cpf):
             self.__cpf = cpf
+
+    @property
+    def cadastro(self):
+        return '%s' % self.__cpf
 
     @property
     def nome(self):

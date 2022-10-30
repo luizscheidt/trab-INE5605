@@ -14,6 +14,10 @@ class Pessoa(ABC):
         else:
             raise FoneInvalidoException
 
+    @abstractmethod
+    def cadastro(self):
+        ...
+
     @property
     def email(self):
         return self.__email
