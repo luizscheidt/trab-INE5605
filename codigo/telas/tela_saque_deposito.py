@@ -1,4 +1,5 @@
 from tela import Tela
 
-class SaqueDeposito(Tela):
-    ...
+class TelaSaqueDeposito(Tela):
+    def __init__(self):
+        ...

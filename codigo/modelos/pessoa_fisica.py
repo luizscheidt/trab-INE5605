@@ -1,15 +1,12 @@
-from controladores.controlador_pessoa import ControladorPessoa, PessoaJaCadastradaException
-from pessoa import Pessoa
-from cpf import Cpf
+from .pessoa import Pessoa
+from .cpf import Cpf
 
 
 class PessoaFisica(Pessoa):
     def __init__(self, email: str, fone: str, cpf: Cpf,  nome: str):
         super().__init__(email, fone)
-        if isinstance(cpf, Cpf):
-            self.__cpf = cpf
-        if isinstance(nome, str):
-            self.__nome = nome
+        self.__cpf = Cpf(cpf)
+        self.__nome = nome
 
     @property
     def cpf(self):
@@ -17,9 +14,6 @@ class PessoaFisica(Pessoa):
 
     @cpf.setter
     def cpf(self, cpf: Cpf):
-        if cpf in ControladorPessoa.pessoas_fisicas:
-            raise PessoaJaCadastradaException
-
         if isinstance(cpf, Cpf):
             self.__cpf = cpf
 
@@ -30,6 +24,10 @@ class PessoaFisica(Pessoa):
     @property
     def nome(self):
         return self.__nome
+
+    @property
+    def tipo(self):
+        return 'fisica'
 
     @nome.setter
     def nome(self, nome: str):

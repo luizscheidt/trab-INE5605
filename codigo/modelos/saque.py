@@ -1,5 +1,5 @@
-from data import Data
-from conta_corrente import ContaCorrente
+from .data import Data
+from .conta_corrente import ContaCorrente
 
 class Saque:
     def __init__(self, valor: float, conta: ContaCorrente, data: Data):

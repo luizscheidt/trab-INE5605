@@ -1,5 +1,5 @@
-from data import Data
-from conta_corrente import ContaCorrente
+from .data import Data
+from .conta_corrente import ContaCorrente
 
 class Transferencia:
     def __init__(self, origem: ContaCorrente, destino: ContaCorrente, valor: float, data: Data):

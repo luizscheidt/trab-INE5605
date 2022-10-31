@@ -6,4 +6,4 @@ class Tela(ABC):
         ...
 
     def mostra_mensagem(self, msg):
-        print('\n\%sn' % msg)
+        print('\n%s' % msg)
