@@ -23,6 +23,10 @@ class PessoaJuridica(Pessoa):
         return '%s' % self.__cnpj
 
     @property
+    def representacao(self):
+        return '%s' % self.razao_social
+
+    @property
     def razao_social(self):
         return self.__razao_social
 

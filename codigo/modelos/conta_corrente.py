@@ -24,6 +24,10 @@ class ContaCorrente:
     def transferencias(self):
         return self.__transferencias
 
+    @dono.setter
+    def dono(self, dono: Pessoa):
+        self.__dono = dono
+
     @saldo.setter
     def saldo(self, valor):
         self.__saldo = valor

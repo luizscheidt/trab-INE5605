@@ -22,6 +22,10 @@ class PessoaFisica(Pessoa):
         return '%s' % self.__cpf
 
     @property
+    def representacao(self):
+        return '%s' % self.nome
+
+    @property
     def nome(self):
         return self.__nome
 

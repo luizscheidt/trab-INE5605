@@ -1,5 +1,5 @@
 from telas.tela_sistema import TelaSistema
-from .controlador_contas import ControladorConta
+from .controlador_contas import ControladorConta, NumeroConta
 from .controlador_pessoa import ControladorPessoa
 from .controlador_saque_deposito import ControladorSaqueDeposito
 from .controlador_transferencia import ControladorTransferencia
@@ -9,10 +9,11 @@ class ControladorSistema:
 
     def __init__(self):
         self.__tela = TelaSistema(self)
-        self.__controlador_contas = ControladorConta(self)
         self.__controlador_pessoa = ControladorPessoa(self)
+        self.__controlador_contas = ControladorConta(self, self.__controlador_pessoa)
         self.__controlador_saque_deposito = ControladorSaqueDeposito(self)
         self.__controlador_transferencia = ControladorTransferencia(self)
+        NumeroConta() # inicializar contagem dos numeros
 
     @property
     def tela(self):

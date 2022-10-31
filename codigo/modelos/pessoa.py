@@ -5,9 +5,14 @@ class Pessoa(ABC):
     def __init__(self, email: str, fone: str):
         self.__email = email
         self.__fone = fone
+        self.__conta = None
 
     @abstractmethod
     def cadastro(self):
+        ...
+
+    @abstractmethod
+    def representacao(self):
         ...
 
     @property
@@ -16,8 +21,7 @@ class Pessoa(ABC):
 
     @email.setter
     def email(self, email: str):
-        if isinstance(email, str):
-            self.__email = email
+        self.__email = email
 
     @property
     def fone(self):
@@ -25,8 +29,16 @@ class Pessoa(ABC):
 
     @fone.setter
     def fone(self, fone: str):
-        if isinstance(fone, str):
-            self.__fone = fone
+        self.__fone = fone
+
+    @property
+    def conta(self):
+        return self.__conta
+
+    @conta.setter
+    def conta(self, conta):
+        self.__conta = conta
+
 
 class EmailInvalidoException(BaseException):
     ...

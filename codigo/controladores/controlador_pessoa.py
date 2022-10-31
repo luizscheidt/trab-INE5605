@@ -20,6 +20,17 @@ class ControladorPessoa:
     def pessoas_juridicas(self):
         return self.__pessoas_juridicas
 
+    @property
+    def pessoas_por_cadastro(self):
+        pessoas_por_cadastro = {}
+
+        for cadastro, pessoa in self.__pessoas_fisicas.items():
+            pessoas_por_cadastro[cadastro] = pessoa
+        for cadastro, pessoa in self.__pessoas_juridicas.items():
+            pessoas_por_cadastro[cadastro] = pessoa
+
+        return pessoas_por_cadastro
+
     def pessoas_por_tipo(self, tipo):
         if tipo == 'fisica':
             return self.__pessoas_fisicas
@@ -27,15 +38,13 @@ class ControladorPessoa:
             return self.__pessoas_juridicas
 
     def pega_pessoa_por_cadastro(self, cadastro):
+        cadastro = cadastro.replace('.', '').replace('-', '').replace('/', '')
         pessoas = list(self.__pessoas_fisicas.values()) + list(self.__pessoas_juridicas.values())
         for pessoa in pessoas:
             if pessoa.cadastro == cadastro:
                 return pessoa
 
         raise PessoaInexistenteException
-
-    def pega_pessoa_por_cnpj(self, cnpj: Cnpj):
-        return self.__pessoas_juridicas.get(cnpj)
 
     def cadastrar_pessoa(self, tipo_pessoa):
         dados_pessoa = self.__tela_pessoas.pega_dados_pessoa(tipo_pessoa)
@@ -47,8 +56,10 @@ class ControladorPessoa:
                     self.__pessoas_fisicas[pessoa.cpf] = pessoa
                 except CpfInvalidoException:
                     self.__tela_pessoas.mostra_mensagem('ATENÇÃO: CPF inválido.')
+                    return self.cadastrar_pessoa(tipo_pessoa)
             else:
                 self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa já cadastrada')
+                return self.cadastrar_pessoa(tipo_pessoa)
         elif tipo_pessoa == 'juridica':
             if dados_pessoa['cnpj'] not in self.__pessoas_juridicas:
                 try:
@@ -56,8 +67,10 @@ class ControladorPessoa:
                     self.__pessoas_juridicas[pessoa.cnpj] = pessoa
                 except CnpjInvalidoException:
                     self.__tela_pessoas.mostra_mensagem('ATENÇÃO: CNPJ inválido.')
+                    return self.cadastrar_pessoa(tipo_pessoa)
             else:
                 self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa já cadastrada')
+                return self.cadastrar_pessoa(tipo_pessoa)
 
         self.__tela_pessoas.mostra_mensagem('Pessoa cadastrada com sucesso.')
 
