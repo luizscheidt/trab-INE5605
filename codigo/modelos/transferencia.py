@@ -8,34 +8,34 @@ class Transferencia:
         self.__destino = destino
         self.__data = data
 
-        @property
-        def origem(self):
-            return self.__origem
+    @property
+    def origem(self):
+        return self.__origem
 
-        @origem.setter
-        def origem(self, origem: ContaCorrente):
-            self.__origem = origem
+    @origem.setter
+    def origem(self, origem: ContaCorrente):
+        self.__origem = origem
 
-        @property
-        def destino(self):
-            return self.__destino
+    @property
+    def destino(self):
+        return self.__destino
 
-        @destino.setter
-        def destino(self, destino: ContaCorrente):
-            self.__destino = destino
+    @destino.setter
+    def destino(self, destino: ContaCorrente):
+        self.__destino = destino
 
-        @property
-        def valor(self):
-            return self.__valor
+    @property
+    def valor(self):
+        return self.__valor
 
-        @valor.setter
-        def valor(self, valor: float):
-            self.__valor = valor
+    @valor.setter
+    def valor(self, valor: float):
+        self.__valor = valor
 
-        @property
-        def data(self):
-            return self.__data
+    @property
+    def data(self):
+        return self.__data
 
-        @data.setter
-        def data(self, data: float):
-            self.__data = data
+    @data.setter
+    def data(self, data: float):
+        self.__data = data

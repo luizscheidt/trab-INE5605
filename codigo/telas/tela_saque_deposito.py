@@ -5,7 +5,7 @@ class TelaSaqueDeposito(Tela):
         self.__controlador_saque_deposito = controlador_saque_deposito
 
     def opcoes(self):
-        print("\n-------- PESSOAS----------")
+        print("\n--------SAQUES E TRANSFERENCIAS----------")
         print("Escolha a opcao")
         print("1 - Realizar Saque")
         print("2 - Realizar Deposito")

@@ -30,12 +30,12 @@ class TelaPessoa(Tela):
         email = input('Email: ')
         if not re.match(r'^[-\w\.]+@([\w-]+\.)+[\w-]{2,4}$', email):
             self.mostra_mensagem('EMAIL INVÁLIDO')
-            self.pega_dados_pessoa(tipo_pessoa)
+            return self.pega_dados_pessoa(tipo_pessoa)
 
         fone = input('Fone: ')
         if not re.match(r'^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}\-?\s*?[0-9]{4}$', fone):
             self.mostra_mensagem('FONE INVÁLIDO')
-            self.pega_dados_pessoa(tipo_pessoa)
+            return self.pega_dados_pessoa(tipo_pessoa)
 
         dados = {
             'email': email,
@@ -48,13 +48,13 @@ class TelaPessoa(Tela):
             cpf = dados['cpf']
             if not re.match(r'^[0-9]{3}.?[0-9]{3}.?[0-9]{3}-?[0-9]{2}$', cpf):
                 self.mostra_mensagem('CPF INVÁLIDO')
-                self.pega_dados_pessoa(tipo_pessoa)
+                return self.pega_dados_pessoa(tipo_pessoa)
         elif tipo_pessoa == 'juridica':
             dados['razao_social'] = input('Razão social: ')
             dados['cnpj'] = input('CNPJ: ')
             if not re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', dados['cnpj']):
                 self.mostra_mensagem('CNPJ INVÁLIDO')
-                self.pega_dados_pessoa(tipo_pessoa)
+                return self.pega_dados_pessoa(tipo_pessoa)
 
         return dados
 
