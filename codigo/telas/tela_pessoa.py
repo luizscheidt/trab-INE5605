@@ -38,9 +38,10 @@ class TelaPessoa(Tela):
         return dados
 
     def mostra_pessoa(self, dados_pessoa):
-        if 'nome' in dados_pessoa:
-            print('NOME: ', dados_pessoa['nome'])
-            print('CPF: ', dados_pessoa['cpf'])
-        elif 'razao_social' in dados_pessoa:
-            print('RAZAO SOCIAL', dados_pessoa['razao_social'])
-            print('CNPJ', dados_pessoa['cnpj'])
+        for dados in dados_pessoa:
+            if 'nome' in dados:
+                print('NOME: ', dados['nome'])
+                print('CPF: ', dados['cpf'])
+            elif 'razao_social' in dados:
+                print('RAZAO SOCIAL', dados['razao_social'])
+                print('CNPJ', dados['cnpj'])
