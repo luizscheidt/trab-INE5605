@@ -11,7 +11,7 @@ class ControladorSistema:
         self.__tela = TelaSistema(self)
         self.__controlador_pessoa = ControladorPessoa(self)
         self.__controlador_contas = ControladorConta(self, self.__controlador_pessoa)
-        self.__controlador_saque_deposito = ControladorSaqueDeposito(self)
+        self.__controlador_saque_deposito = ControladorSaqueDeposito(self, self.__controlador_contas)
         self.__controlador_transferencia = ControladorTransferencia(self)
         NumeroConta() # inicializar contagem dos numeros
 

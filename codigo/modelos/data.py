@@ -2,6 +2,6 @@ from datetime import datetime
 
 class Data:
 
-    def agora():
+    def hoje():
         agora = datetime.now()
-        return agora.strftime('%m/%d/%Y')
+        return agora.strftime('%d/%m/%Y')

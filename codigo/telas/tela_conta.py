@@ -45,6 +45,8 @@ class TelaConta(Tela):
     def pega_saldo_conta(self):
         try:
             saldo = float(input('Saldo: '))
+            if saldo < 0:
+                raise ValueError
         except ValueError:
             self.mostra_mensagem('Saldo inválido')
             return self.pega_saldo_conta()

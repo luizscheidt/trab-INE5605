@@ -6,6 +6,7 @@ class Saque:
         self.__valor = valor
         self.__conta = conta
         self.__data = data
+        self.__tipo = 'Saque'
 
     @property
     def data(self):
@@ -30,3 +31,7 @@ class Saque:
     @conta.setter
     def conta(self, conta: float):
         self.__conta = conta
+
+    @property
+    def tipo(self):
+        return self.__tipo

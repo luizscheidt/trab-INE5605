@@ -1,11 +1,11 @@
-from data import Data
-from conta_corrente import ContaCorrente
+from .conta_corrente import ContaCorrente
 
 class Deposito:
-    def __init__(self, valor: float, conta: ContaCorrente, data: Data):
+    def __init__(self, valor: float, conta: ContaCorrente, data: str):
         self.__valor = valor
         self.__conta = conta
         self.__data = data
+        self.__tipo = 'Deposito'
 
     @property
     def valor(self):
@@ -28,5 +28,9 @@ class Deposito:
         return self.__data
 
     @data.setter
-    def data(self, data: Data):
+    def data(self, data: str):
         self.__data = data
+
+    @property
+    def tipo(self):
+        return self.__tipo
