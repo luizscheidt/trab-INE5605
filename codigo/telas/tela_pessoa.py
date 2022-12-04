@@ -49,12 +49,15 @@ class TelaPessoa(Tela):
             if not re.match(r'^[0-9]{3}.?[0-9]{3}.?[0-9]{3}-?[0-9]{2}$', cpf):
                 self.mostra_mensagem('CPF INVÁLIDO')
                 return self.pega_dados_pessoa(tipo_pessoa)
+            dados['cpf'] = cpf.replace('.', '').replace('-', '')
         elif tipo_pessoa == 'juridica':
             dados['razao_social'] = input('Razão social: ')
             dados['cnpj'] = input('CNPJ: ')
-            if not re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', dados['cnpj']):
+            cnpj = dados['cnpj']
+            if not re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', cnpj):
                 self.mostra_mensagem('CNPJ INVÁLIDO')
                 return self.pega_dados_pessoa(tipo_pessoa)
+            dados['cnpj'] = cnpj.replace('.', '').replace('-', '')
 
         return dados
 

@@ -27,7 +27,11 @@ class TelaConta(Tela):
     def pega_cadastro_dono_conta(self):
         print('-------- DADOS CONTA----------')
         cadastro = input('CPF/CNPJ do dono: ')
+        if cadastro == '-1':
+            return self.opcoes()
+
         if not (re.match(r'^[0-9]{3}.?[0-9]{3}.?[0-9]{3}-?[0-9]{2}$', cadastro) or re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', cadastro)):
+
             print('CADASTRO INVALIDO')
             return self.pega_cadastro_dono_conta()
 

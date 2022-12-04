@@ -1,6 +1,8 @@
 from telas.tela_conta import TelaConta
 from modelos.conta_corrente import ContaCorrente
 from controladores.controlador_pessoa import PessoaInexistenteException
+from DAOs.conta_dao import ContaDAO
+from DAOs.numeros_dao import NumeroDAO
 
 
 class ControladorConta:
@@ -9,17 +11,33 @@ class ControladorConta:
         self.__controlador_pessoas = controlador_pessoas
         self.__tela_contas = TelaConta()
         self.__gerador_numero = NumeroConta()
-        self.__contas_por_numero = {} # numero: conta
-        self.__contas_por_dono = {} # dono: conta
+        self.__dao = ContaDAO()
+
+    @property
+    def DAO(self):
+        return self.__dao
+
+    @property
+    def contas(self):
+        return self.DAO.get_all()
+
+    @property
+    def contas_por_dono(self):
+        contas_por_dono = {}
+        for conta in self.contas:
+            contas_por_dono[conta.dono] = conta
+
+    def atualiza_conta(self, conta):
+        self.DAO.update(conta.numero, conta)
 
     def pega_conta_por_numero(self, numero: float):
-        if conta := self.__contas_por_numero.get(numero):
+        if conta := self.DAO.get(numero):
             return conta
 
         raise ContaInexistenteException
 
     def pega_conta_por_dono(self, dono):
-        if conta := self.__contas_por_dono.get(dono):
+        if conta := self.contas_por_dono.get(dono):
             return conta
 
         raise ContaInexistenteException
@@ -38,15 +56,11 @@ class ControladorConta:
         saldo = self.__tela_contas.pega_saldo_conta()
         numero = self.__gerador_numero.gera_numero()
         conta = ContaCorrente(dono=dono, numero=numero, saldo=saldo)
+        self.DAO.add(conta)
         dono.conta = conta
+        self.__controlador_pessoas.atualiza_pessoa(dono)
 
-        try:
-            self.__contas_por_numero[conta.numero] = conta
-            self.__contas_por_dono[conta.dono] = conta
-        except ContaJaCadastradaException:
-            self.__tela_contas.mostra_mensagem('ATENÇÃO: Conta já cadastrada')
-        else:
-            self.__tela_contas.mostra_mensagem('Conta cadastrada com sucesso.')
+        self.__tela_contas.mostra_mensagem('Conta cadastrada com sucesso.')
 
     def alterar_conta(self):
         identificador_conta = self.__tela_contas.pega_numero_conta()
@@ -73,6 +87,9 @@ class ControladorConta:
 
         for atributo, valor in novos_dados.items():
             setattr(conta, atributo, valor)
+
+        self.DAO.update(conta.numero, conta)
+
         self.__tela_contas.mostra_mensagem('Dados da conta alterados com sucesso.')
 
     def lista_contas(self):
@@ -80,7 +97,7 @@ class ControladorConta:
             'dono': conta.dono.representacao,
             'saldo': conta.saldo,
             'numero': conta.numero,
-            } for numero, conta in self.__contas_por_numero.items()
+            } for conta in self.contas
         ]
 
         return self.__tela_contas.mostra_conta(dados_contas)
@@ -94,8 +111,9 @@ class ControladorConta:
             self.__tela_contas.mostra_mensagem('ATENÇÃO: Conta inexistente.')
             return self.excluir_conta()
 
-        self.__contas_por_dono.pop(conta.dono)
-        self.__contas_por_numero.pop(conta.numero)
+        self.DAO.remove(conta.numero)
+        conta.dono.conta = None
+        self.__controlador_pessoas.atualiza_pessoa(conta.dono)
 
         self.__tela_contas.mostra_mensagem('Conta excluída com sucesso.')
 
@@ -118,14 +136,23 @@ class ControladorConta:
 
 class NumeroConta:
     def __init__(self):
-        self.__ultimo_numero = 0
+        self.__dao = NumeroDAO()
+
+    @property
+    def ultimo_numero(self):
+        numero = self.__dao.get('conta')
+        return numero
 
     def gera_numero(self):
-        self.__ultimo_numero += 1
-        return self.__ultimo_numero
+        numero = self.ultimo_numero + 1
+        self.__dao.add('conta', numero)
+        return numero
 
 
 class ContaInexistenteException(BaseException):
+    ...
+
+class MesmaContaException(BaseException):
     ...
 
 

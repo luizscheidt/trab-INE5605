@@ -2,11 +2,16 @@ from .data import Data
 from .conta_corrente import ContaCorrente
 
 class Saque:
-    def __init__(self, valor: float, conta: ContaCorrente, data: Data):
+    def __init__(self, id: int, valor: float, conta: ContaCorrente, data: Data):
+        self.__id = id
         self.__valor = valor
         self.__conta = conta
         self.__data = data
-        self.__tipo = 'Saque'
+        self.__tipo = 'saque'
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def data(self):

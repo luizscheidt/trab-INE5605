@@ -1,7 +1,9 @@
 from modelos.transferencia import Transferencia
 from modelos.data import Data
-from controladores.controlador_contas import ContaInexistenteException
+from controladores.controlador_contas import ContaInexistenteException, MesmaContaException
 from telas.tela_transferencia import TelaTransferencia
+from DAOs.transferencia_dao import TransferenciaDAO
+from DAOs.numeros_dao import NumeroDAO
 
 
 class ControladorTransferencia:
@@ -9,7 +11,16 @@ class ControladorTransferencia:
         self.__controlador_sistema = controlador_sistema
         self.__controlador_contas = controlador_contas
         self.__tela = TelaTransferencia(self)
-        self.__transferencias = []
+        self.__gerador_numero = NumeroTransferencia()
+        self.__DAO = TransferenciaDAO()
+
+    @property
+    def DAO(self):
+        return self.__DAO
+
+    @property
+    def transferencias(self):
+        return self.DAO.get_all()
 
     def realizar_transferencia(self):
         id_origem, id_destino = self.__tela.pega_numero_contas()
@@ -18,8 +29,13 @@ class ControladorTransferencia:
             origem = self.__controlador_contas.pega_conta_por_numero(id_origem)
             self.__tela.mostra_mensagem('Saldo Disponível: %s' % origem.saldo)
             destino = self.__controlador_contas.pega_conta_por_numero(id_destino)
+            if origem == destino:
+                raise MesmaContaException
         except ContaInexistenteException:
             self.__tela.mostra_mensagem('ATENÇÃO: Conta inexistente')
+            return self.abre_tela()
+        except MesmaContaException:
+            self.__tela.mostra_mensagem('ATENÇÃO: A transferência deve ser feita entre contas diferentes')
             return self.abre_tela()
 
         valor = self.__tela.pega_valor()
@@ -27,12 +43,15 @@ class ControladorTransferencia:
         if valor < origem.saldo:
             origem.saldo -= valor
             destino.saldo += valor
-            transferencia = Transferencia(origem, destino, valor, data=Data.hoje())
-            self.__transferencias.append(transferencia)
+            id = self.__gerador_numero.gera_numero()
+            transferencia = Transferencia(id, origem, destino, valor, data=Data.hoje())
+            self.DAO.add(transferencia)
         else:
             self.__tela.mostra_mensagem('SALDO INSUFICIENTE')
             return self.abre_tela()
 
+        self.__controlador_contas.atualiza_conta(origem)
+        self.__controlador_contas.atualiza_conta(destino)
         self.__tela.mostra_mensagem('Operação realizada com sucesso')
 
     def mostra_operacoes(self, operacoes):
@@ -50,13 +69,13 @@ class ControladorTransferencia:
 
 
     def listar_transferencias(self):
-        return self.mostra_operacoes(self.__transferencias)
+        return self.mostra_operacoes(self.transferencias)
 
     def filtar_transferencias_por_valor(self):
         operacoes_filtradas = []
         valor_min, valor_max = self.__tela.pega_intervalo_valores()
 
-        for op in self.__transferencias:
+        for op in self.transferencias:
             if valor_min < op.valor and valor_max > op.valor:
                 operacoes_filtradas.append(op)
 
@@ -67,7 +86,7 @@ class ControladorTransferencia:
         mes = f'/{mes:02}/'
         operacoes_filtradas = []
 
-        for op in self.__transferencias:
+        for op in self.transferencias:
             if mes in op.data:
                 operacoes_filtradas.append(op)
 
@@ -77,7 +96,7 @@ class ControladorTransferencia:
         max = 0
         mais_alta = None
 
-        for op in self.__transferencias:
+        for op in self.transferencias:
             if op.valor > max:
                 mais_alta = op
                 max = op.valor
@@ -100,3 +119,18 @@ class ControladorTransferencia:
         while True:
             funcao_escolhida = opcoes[self.__tela.opcoes()]
             funcao_escolhida()
+
+
+class NumeroTransferencia:
+    def __init__(self):
+        self.__dao = NumeroDAO()
+
+    @property
+    def ultimo_numero(self):
+        numero = self.__dao.get('transferencia')
+        return numero
+
+    def gera_numero(self):
+        numero = self.ultimo_numero + 1
+        self.__dao.add('transferencia', numero)
+        return numero
