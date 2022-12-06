@@ -43,7 +43,10 @@ class ControladorConta:
         raise ContaInexistenteException
 
     def cadastrar_conta(self):
-        cadastro_dono = self.__tela_contas.pega_cadastro_dono_conta()
+        while True:
+            cadastro_dono = self.__tela_contas.pega_cadastro_dono_conta()
+            if cadastro_dono:
+                break
         try:
             dono = self.__controlador_pessoas.pega_pessoa_por_cadastro(cadastro_dono)
             if dono.conta:
@@ -63,7 +66,9 @@ class ControladorConta:
         self.__tela_contas.mostra_mensagem('Conta cadastrada com sucesso.')
 
     def alterar_conta(self):
-        identificador_conta = self.__tela_contas.pega_numero_conta()
+        identificador_conta = None
+        while not identificador_conta:
+            identificador_conta = self.__tela_contas.pega_numero_conta()
 
         try:
             conta = self.pega_conta_por_numero(identificador_conta)
@@ -103,7 +108,9 @@ class ControladorConta:
         return self.__tela_contas.mostra_conta(dados_contas)
 
     def excluir_conta(self):
-        identificador_conta = self.__tela_contas.pega_numero_conta()
+        identificador_conta = None
+        while not identificador_conta:
+            identificador_conta = self.__tela_contas.pega_numero_conta()
 
         try:
             conta = self.pega_conta_por_numero(identificador_conta)

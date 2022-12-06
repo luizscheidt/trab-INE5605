@@ -1,27 +1,57 @@
+import PySimpleGUI as sg
 from .tela import Tela
 
 class TelaTransferencia(Tela):
     def __init__(self, controlador_transferencias):
         self.__controlador_saque_deposito = controlador_transferencias
+        self.__window = None
+        self.init_components()
+
+    def init_components(self):
+        sg.theme('Reddit')
+        layout = [
+            [sg.Text('Sistema Bancário', justification= 'center' , size=(50,2))],
+            [sg.Text('SAQUES E DEPOSITOS', justification='center', size =(25,1))],
+            [sg.Button('Realizar Transferência', key='1')],
+            [sg.Button('Listar Transferência', key='2')],
+            [sg.Button('Filtrar Transferências por valor', key='3')],
+            [sg.Button('Filtrar Transferências por mês', key='4')],
+            [sg.Button('Filtrar Transferências mais alta', key='5')],
+            [sg.Button('Retornar', key='0')],
+        ]
+
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
+
+
+    def close(self):
+        self.__window.Close()
+
+    def open(self):
+        button, values = self.__window.Read()
+
+        return button, values
 
     def opcoes(self):
-        print("\n--------TRANSFERENCIAS----------")
-        print("Escolha a opcao")
-        print("1 - Realizar Transferência")
-        print("2 - Listar Transferências")
-        print("3 - Filtrar Transferências por valor")
-        print("4 - Filtrar Transferências por mês")
-        print("5 - Filtrar Transferências mais alta")
-        print("0 - Retornar\n")
+        self.init_components()
+        button, values = self.__window.Read()
 
-        try:
-            opcao = int(input('Escolha a opcao: '))
-            if opcao in (0, 1, 2, 3, 4, 5):
-                return opcao
-        except ValueError:
-            self.mostra_mensagem('Entrada inválida.')
+        opcao = 0
+        if button == '1':
+            opcao = 1
+        elif button == '2':
+            opcao = 2
+        elif button == '3':
+            opcao = 3
+        elif button == '4':
+            opcao = 4
+        elif button == '5':
+            opcao = 5
+        elif button == '0':
+            opcao = 0
 
-        return self.opcoes()
+        self.close()
+
+        return opcao
 
     def pega_numero_contas(self):
         try:

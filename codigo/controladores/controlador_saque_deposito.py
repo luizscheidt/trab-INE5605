@@ -41,7 +41,9 @@ class ControladorSaqueDeposito:
         return depositos
 
     def realizar_operacao(self, tipo):
-        identificador_conta = self.__tela.pega_numero_conta()
+        identificador_conta = None
+        while not identificador_conta:
+            identificador_conta = self.__tela.pega_numero_conta()
 
         try:
             conta = self.__controlador_contas.pega_conta_por_numero(identificador_conta)

@@ -59,6 +59,8 @@ class ControladorPessoa:
 
     def cadastrar_pessoa(self, tipo_pessoa):
         dados_pessoa = self.__tela_pessoas.pega_dados_pessoa(tipo_pessoa)
+        if dados_pessoa == 'cancelar':
+            return self.abre_tela()
 
         if tipo_pessoa == 'fisica':
             if dados_pessoa['cpf'] not in self.pessoas:
@@ -94,6 +96,9 @@ class ControladorPessoa:
     def alterar_pessoa(self):
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
 
+        if cadastro_pessoa == 'cancelar':
+            return self.abre_tela()
+
         try:
             pessoa = self.pega_pessoa_por_cadastro(cadastro_pessoa)
             self.lista_pessoa(pessoa)
@@ -115,11 +120,13 @@ class ControladorPessoa:
             dados_pessoa = {
                 'nome': pessoa.nome,
                 'cpf': pessoa.cpf,
+                'fone': pessoa.fone,
             }
         elif pessoa.tipo == 'juridica':
             dados_pessoa = {
                 'razao_social': pessoa.razao_social,
                 'cnpj': pessoa.cnpj,
+                'fone': pessoa.fone,
             }
 
         self.__tela_pessoas.mostra_pessoa([dados_pessoa])
@@ -132,6 +139,7 @@ class ControladorPessoa:
             dados_pessoas = [{
                 'nome': pessoa.nome,
                 'cpf': pessoa.cpf,
+                'fone': pessoa.fone,
             }
                 for pessoa in pessoas
             ]
@@ -140,6 +148,7 @@ class ControladorPessoa:
                 {
                 'razao_social': pessoa.razao_social,
                 'cnpj': pessoa.cnpj,
+                'fone': pessoa.fone,
             }
                 for pessoa in pessoas
             ]
@@ -155,13 +164,16 @@ class ControladorPessoa:
     def excluir_pessoa(self):
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
 
+        if cadastro_pessoa == 'cancelar':
+            return self.abre_tela()
+
         try:
             pessoa = self.pega_pessoa_por_cadastro(cadastro_pessoa)
             if pessoa.tipo == 'fisica':
                 self.DAO.remove(cadastro_pessoa)
             elif pessoa.tipo == 'juridica':
                 self.DAO.remove(cadastro_pessoa)
-            self.__tela_pessoas.mostra_mensagem(f'Pessoa excluida com sucesso. {pessoa.nome}, {pessoa.cadastro}')
+            self.__tela_pessoas.mostra_mensagem(f'Pessoa excluida com sucesso. {pessoa.representacao}, {pessoa.cadastro}')
         except PessoaInexistenteException:
             self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa inexistente.')
             self.excluir_pessoa()

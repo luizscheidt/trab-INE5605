@@ -1,3 +1,4 @@
+import PySimpleGUI as sg
 import re
 from .tela import Tela
 
@@ -5,36 +6,93 @@ class TelaPessoa(Tela):
     def __init__(self):
         ...
 
+    def init_components(self):
+        sg.theme('Reddit')
+        layout = [
+            [sg.Text('Sistema Bancário', justification= 'center' , size=(50,2))],
+            [sg.Text('USUÁRIOS', justification='center', size =(25,1))],
+            [sg.Button('Cadastrar Pessoa Física', key='1')],
+            [sg.Button('Cadastrar Pessoa Jurídica', key='2')],
+            [sg.Button('Alterar Usuário', key='3')],
+            [sg.Button('Listar Pessoas Físicas', key='4')],
+            [sg.Button('Listar Pessoas Jurídicas', key='5')],
+            [sg.Button('Excluir Usuário', key='6')],
+            [sg.Button('Retornar', key='0')],
+        ]
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
+
+
+    def close(self):
+        self.__window.Close()
+
+    def open(self):
+        button, values = self.__window.Read()
+
+        return button, values
+
     def opcoes(self):
-        print("\n-------- PESSOAS----------")
-        print("Escolha a opcao")
-        print("1 - Cadastrar Pessoa Fisica")
-        print("2 - Cadastrar Pessoa Juridica")
-        print("3 - Alterar Usuário")
-        print("4 - Listar Pessoas Físicas")
-        print("5 - Listar Pessoas Jurídicas")
-        print("6 - Excluir Usuário")
-        print("0 - Retornar\n")
+        self.init_components()
+        button, values = self.__window.Read()
 
-        try:
-            opcao = int(input('Escolha a opcao: '))
-            if opcao in (0, 1, 2, 3, 4, 5, 6):
-                return opcao
-        except ValueError:
-            self.mostra_mensagem('Entrada inválida.')
+        opcao = 0
+        if button == '1':
+            opcao = 1
+        elif button == '2':
+            opcao = 2
+        elif button == '3':
+            opcao = 3
+        elif button == '4':
+            opcao = 4
+        elif button == '5':
+            opcao = 5
+        elif button == '6':
+            opcao = 6
 
-        return self.opcoes()
+        self.close()
+
+        return opcao
 
     def pega_dados_pessoa(self, tipo_pessoa):
-        print('-------- DADOS USUARIO----------')
-        email = input('Email: ')
+        sg.theme('Reddit')
+
+        if tipo_pessoa == 'fisica':
+            cadastro = 'CPF: '
+            representacao = 'Nome: '
+            titulo = 'FÍSICA'
+        elif tipo_pessoa == 'juridica':
+            cadastro = 'CNPJ: '
+            representacao = 'Razão Social'
+            titulo = 'JURÍDICA'
+
+        layout = [
+            [sg.Text('-------- DADOS PESSOA %s ----------' % titulo, font=("Helvica", 25))],
+            [sg.Text('Email:', size=(15, 1)), sg.InputText('', key='email')],
+            [sg.Text('Fone:', size=(15, 1)), sg.InputText('', key='fone')],
+            [sg.Text(cadastro, size=(15, 1)), sg.InputText('', key='cadastro')],
+            [sg.Text(representacao, size=(15, 1)), sg.InputText('', key='representacao')],
+            [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
+        ]
+        self.__window = sg.Window('Sistema de livros').Layout(layout)
+
+        button, values = self.open()
+
+        if button in (None, 'Cancelar'):
+            self.close()
+
+            return 'cancelar'
+
+        email = values['email']
         if not re.match(r'^[-\w\.]+@([\w-]+\.)+[\w-]{2,4}$', email):
             self.mostra_mensagem('EMAIL INVÁLIDO')
+            self.close()
+
             return self.pega_dados_pessoa(tipo_pessoa)
 
-        fone = input('Fone: ')
+        fone = values['fone']
         if not re.match(r'^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}\-?\s*?[0-9]{4}$', fone):
             self.mostra_mensagem('FONE INVÁLIDO')
+            self.close()
+
             return self.pega_dados_pessoa(tipo_pessoa)
 
         dados = {
@@ -43,37 +101,67 @@ class TelaPessoa(Tela):
         }
 
         if tipo_pessoa == 'fisica':
-            dados['nome'] = input('Nome: ')
-            dados['cpf'] = input('CPF: ')
+            dados['nome'] = values['representacao']
+            dados['cpf'] = values['cadastro']
             cpf = dados['cpf']
+
             if not re.match(r'^[0-9]{3}.?[0-9]{3}.?[0-9]{3}-?[0-9]{2}$', cpf):
                 self.mostra_mensagem('CPF INVÁLIDO')
+                self.close()
+
                 return self.pega_dados_pessoa(tipo_pessoa)
+
             dados['cpf'] = cpf.replace('.', '').replace('-', '')
         elif tipo_pessoa == 'juridica':
-            dados['razao_social'] = input('Razão social: ')
-            dados['cnpj'] = input('CNPJ: ')
+            dados['razao_social'] = values['representacao']
+            dados['cnpj'] = values['cadastro']
             cnpj = dados['cnpj']
+
             if not re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', cnpj):
                 self.mostra_mensagem('CNPJ INVÁLIDO')
+                self.close()
+
                 return self.pega_dados_pessoa(tipo_pessoa)
             dados['cnpj'] = cnpj.replace('.', '').replace('-', '')
+
+        self.close()
 
         return dados
 
     def mostra_pessoa(self, dados_pessoa):
-        if not dados_pessoa:
-            self.mostra_mensagem('Sem usuários deste tipo cadastrados.')
+          # fazer aqui tratamento dos dados, caso a entrada seja diferente do esperado
+        if dados_pessoa:
+            string_todos_amigos = ''
+            for dados in dados_pessoa:
+                string_todos_amigos += 'Nome: ' + dados['nome'] + '\n'
+                string_todos_amigos += 'Fone: ' + dados['fone'] + '\n'
 
-        for dados in dados_pessoa:
-            if 'nome' in dados:
-                print('NOME: ', dados['nome'])
-                print('CPF: ', dados['cpf'])
-            elif 'razao_social' in dados:
-                print('RAZAO SOCIAL', dados['razao_social'])
-                print('CNPJ', dados['cnpj'])
-            print('\n')
+                if cpf := dados.get('cpf'):
+                    string_todos_amigos += 'CPF: ' + cpf + '\n\n'
+                elif cnpj := dados.get('cnpj'):
+                    string_todos_amigos += 'CNPJ: ' + cnpj + '\n\n'
+
+            sg.Popup('-------- USUÁRIOS ----------', string_todos_amigos)
+        else:
+            self.mostra_mensagem('Nenhum usuário deste tipo cadastrado.')
 
     def pega_cadastro(self):
-        cadastro = input('Entre o numero de registro (CPF/CNPJ): ')
+        layout = [
+            [sg.Text('-------- SELECIONAR USUÁRIO ----------', font=("Helvica", 25))],
+            [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(12, 1)), sg.InputText('', key='cadastro')],
+            [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
+        ]
+        self.__window = sg.Window('Sistema de livros').Layout(layout)
+
+        button, values = self.open()
+
+        if button in (None, 'Cancelar'):
+            self.close()
+
+            return 'cancelar'
+
+        cadastro = values['cadastro']
+
+        self.close()
+
         return cadastro.replace('-', '').replace('.', '').replace('/', '')
