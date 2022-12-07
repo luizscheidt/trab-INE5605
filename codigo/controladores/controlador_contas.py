@@ -43,6 +43,8 @@ class ControladorConta:
         raise ContaInexistenteException
 
     def cadastrar_conta(self):
+        self.__controlador_pessoas.lista_pessoas('fisica')
+        self.__controlador_pessoas.lista_pessoas('juridica')
         cadastro_dono, saldo = self.__tela_contas.pega_cadastro_dono_conta()
 
         if cadastro_dono == 'cancelar':

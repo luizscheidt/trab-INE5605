@@ -70,14 +70,14 @@ class TelaSaqueDeposito(Tela):
             [sg.Text('Valor:', size=(15, 1)), sg.InputText('', key='valor')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
         if button in (None, 'Cancelar'):
             self.close()
 
-            return 'cancelar', 'cancelar'
+            return 'cancelar'
 
         valor = values['valor']
 
@@ -148,7 +148,7 @@ class TelaSaqueDeposito(Tela):
             [sg.Radio('Dezembro', 'RD2', key='12')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 

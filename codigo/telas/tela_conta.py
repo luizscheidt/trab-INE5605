@@ -80,7 +80,7 @@ class TelaConta(Tela):
             for dados in dados_contas:
                 string_todas_contas += 'Dono: ' + dados['dono'] + '\n'
                 string_todas_contas += 'Saldo: ' + str(dados['saldo']) + '\n'
-                string_todas_contas += 'Número: ' + str(dados['numero']) + '\n'
+                string_todas_contas += 'Número: ' + str(dados['numero']) + '\n\n'
 
             sg.Popup('-------- CONTAS ----------', string_todas_contas)
         else:

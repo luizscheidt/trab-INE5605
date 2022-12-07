@@ -130,17 +130,21 @@ class TelaPessoa(Tela):
 
     def mostra_pessoa(self, dados_pessoa):
         if dados_pessoa:
-            string_todos_amigos = ''
+            string_pessoas = ''
             for dados in dados_pessoa:
-                string_todos_amigos += 'Nome: ' + dados['nome'] + '\n'
-                string_todos_amigos += 'Fone: ' + dados['fone'] + '\n'
+                if nome := dados.get('nome'):
+                    string_pessoas += 'Nome: ' + dados['nome'] + '\n'
+                elif razao_social := dados.get('razao_social'):
+                    string_pessoas += 'Razão Social: ' + dados['razao_social'] + '\n'
+
+                string_pessoas += 'Fone: ' + dados['fone'] + '\n'
 
                 if cpf := dados.get('cpf'):
-                    string_todos_amigos += 'CPF: ' + cpf + '\n\n'
+                    string_pessoas += 'CPF: ' + cpf + '\n\n'
                 elif cnpj := dados.get('cnpj'):
-                    string_todos_amigos += 'CNPJ: ' + cnpj + '\n\n'
+                    string_pessoas += 'CNPJ: ' + cnpj + '\n\n'
 
-            sg.Popup('-------- USUÁRIOS ----------', string_todos_amigos)
+            sg.Popup('-------- USUÁRIOS ----------', string_pessoas)
         else:
             self.mostra_mensagem('Nenhum usuário deste tipo cadastrado.')
 

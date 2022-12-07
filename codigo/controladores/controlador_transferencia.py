@@ -23,14 +23,20 @@ class ControladorTransferencia:
         return self.DAO.get_all()
 
     def realizar_transferencia(self):
+        self.__controlador_contas.lista_contas()
         id_origem, id_destino = self.__tela.pega_numero_contas()
+
+        if id_origem == 'cancelar':
+            self.close()
+
+            return self.abre_tela()
 
         try:
             origem = self.__controlador_contas.pega_conta_por_numero(id_origem)
-            self.__tela.mostra_mensagem('Saldo Disponível: %s' % origem.saldo)
             destino = self.__controlador_contas.pega_conta_por_numero(id_destino)
             if origem == destino:
                 raise MesmaContaException
+            self.__tela.mostra_mensagem('Saldo Disponível: %s' % origem.saldo)
         except ContaInexistenteException:
             self.__tela.mostra_mensagem('ATENÇÃO: Conta inexistente')
             return self.abre_tela()
@@ -39,6 +45,8 @@ class ControladorTransferencia:
             return self.abre_tela()
 
         valor = self.__tela.pega_valor()
+        if valor == 'cancelar':
+            return self.realizar_transferencia()
 
         if valor < origem.saldo:
             origem.saldo -= valor
@@ -74,6 +82,8 @@ class ControladorTransferencia:
     def filtar_transferencias_por_valor(self):
         operacoes_filtradas = []
         valor_min, valor_max = self.__tela.pega_intervalo_valores()
+        if valor_min == 'cancelar':
+            return self.abre_tela()
 
         for op in self.transferencias:
             if valor_min < op.valor and valor_max > op.valor:
@@ -83,6 +93,9 @@ class ControladorTransferencia:
 
     def filtrar_transferencias_por_mes(self):
         mes = self.__tela.pega_mes()
+        if mes == 'cancelar':
+            return self.abre_tela()
+
         mes = f'/{mes:02}/'
         operacoes_filtradas = []
 
