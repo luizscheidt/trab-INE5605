@@ -94,6 +94,8 @@ class ControladorPessoa:
         self.cadastrar_pessoa(tipo_pessoa='juridica')
 
     def alterar_pessoa(self):
+        self.lista_pessoas()
+
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
 
         if cadastro_pessoa == 'cancelar':
@@ -132,26 +134,26 @@ class ControladorPessoa:
         self.__tela_pessoas.mostra_pessoa([dados_pessoa])
 
 
-    def lista_pessoas(self, tipo_pessoa):
-        pessoas = self.pessoas_por_tipo(tipo_pessoa)
+    def lista_pessoas(self, tipo_pessoa: str = ''):
+        if tipo_pessoa:
+            pessoas = self.pessoas_por_tipo(tipo_pessoa)
+        else:
+            pessoas = self.pessoas
 
-        if tipo_pessoa == 'fisica':
-            dados_pessoas = [{
-                'nome': pessoa.nome,
-                'cpf': pessoa.cpf,
-                'fone': pessoa.fone,
+        dados_pessoas = []
+        for p in pessoas:
+            dados = {
+                'representacao': p.representacao,
+                'cadastro': p.cadastro,
+                'fone': p.fone,
+                'tipo': p.tipo,
             }
-                for pessoa in pessoas
-            ]
-        elif tipo_pessoa == 'juridica':
-            dados_pessoas = [
-                {
-                'razao_social': pessoa.razao_social,
-                'cnpj': pessoa.cnpj,
-                'fone': pessoa.fone,
-            }
-                for pessoa in pessoas
-            ]
+            if conta := p.conta:
+                dados['conta'] = str(conta.numero)
+            else:
+                dados['conta'] = 'Sem conta.'
+
+            dados_pessoas.append(dados)
 
         self.__tela_pessoas.mostra_pessoa(dados_pessoas)
 
@@ -162,6 +164,8 @@ class ControladorPessoa:
         self.lista_pessoas('juridica')
 
     def excluir_pessoa(self):
+        self.lista_pessoas()
+
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
 
         if cadastro_pessoa == 'cancelar':
@@ -188,7 +192,8 @@ class ControladorPessoa:
             3: self.alterar_pessoa,
             4: self.lista_pessoas_fisicas,
             5: self.lista_pessoas_juridicas,
-            6: self.excluir_pessoa,
+            6: self.lista_pessoas,
+            7: self.excluir_pessoa,
             0: self.retornar,
         }
 

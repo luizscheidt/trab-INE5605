@@ -68,6 +68,8 @@ class ControladorConta:
         self.__tela_contas.mostra_mensagem('Conta cadastrada com sucesso.')
 
     def alterar_conta(self):
+        self.lista_contas()
+
         identificador_conta = self.__tela_contas.pega_numero_conta()
 
         if identificador_conta == 'cancelar':

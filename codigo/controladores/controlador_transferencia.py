@@ -27,9 +27,7 @@ class ControladorTransferencia:
         id_origem, id_destino = self.__tela.pega_numero_contas()
 
         if id_origem == 'cancelar':
-            self.close()
-
-            return self.abre_tela()
+            return self.realizar_transferencia()
 
         try:
             origem = self.__controlador_contas.pega_conta_por_numero(id_origem)

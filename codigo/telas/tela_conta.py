@@ -40,8 +40,8 @@ class TelaConta(Tela):
         sg.theme('Reddit')
         layout = [
             [sg.Text('-------- DADOS CONTA ----------', font=("Helvica", 25))],
-            [sg.Text('CPF/CNPJ do dono:', size=(15, 1)), sg.InputText('', key='cadastro')],
-            [sg.Text('Saldo da Conta:', size=(15, 1)), sg.InputText('', key='saldo')],
+            [sg.Text('CPF/CNPJ do dono:', size=(28, 1)), sg.InputText('', key='cadastro')],
+            [sg.Text('Saldo da Conta:', size=(28, 1)), sg.InputText('', key='saldo')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
         self.__window = sg.Window('Sistema de livros').Layout(layout)
@@ -119,7 +119,7 @@ class TelaConta(Tela):
         sg.theme('Reddit')
         layout = [
             [sg.Text('Sistema Bancário', justification= 'center' , size=(50,2))],
-            [sg.Text('CONTAS', justification='center', size =(25,1))],
+            [sg.Text('CONTAS', size =(25,1))],
             [sg.Button('Cadastra Conta', key='1')],
             [sg.Button('Excluir Conta', key='2')],
             [sg.Button('Alterar Conta', key='3')],

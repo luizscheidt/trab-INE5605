@@ -10,13 +10,14 @@ class TelaPessoa(Tela):
         sg.theme('Reddit')
         layout = [
             [sg.Text('Sistema Bancário', justification= 'center' , size=(50,2))],
-            [sg.Text('USUÁRIOS', justification='center', size =(25,1))],
+            [sg.Text('USUÁRIOS', size =(35,1))],
             [sg.Button('Cadastrar Pessoa Física', key='1')],
             [sg.Button('Cadastrar Pessoa Jurídica', key='2')],
             [sg.Button('Alterar Usuário', key='3')],
             [sg.Button('Listar Pessoas Físicas', key='4')],
             [sg.Button('Listar Pessoas Jurídicas', key='5')],
-            [sg.Button('Excluir Usuário', key='6')],
+            [sg.Button('Listar Todos Usuários', key='6')],
+            [sg.Button('Excluir Usuário', key='7')],
             [sg.Button('Retornar', key='0')],
         ]
         self.__window = sg.Window('Sistema Bancário').Layout(layout)
@@ -35,18 +36,10 @@ class TelaPessoa(Tela):
         button, values = self.__window.Read()
 
         opcao = 0
-        if button == '1':
-            opcao = 1
-        elif button == '2':
-            opcao = 2
-        elif button == '3':
-            opcao = 3
-        elif button == '4':
-            opcao = 4
-        elif button == '5':
-            opcao = 5
-        elif button == '6':
-            opcao = 6
+        try:
+            opcao = int(button)
+        except ValueError:
+            pass
 
         self.close()
 
@@ -132,17 +125,16 @@ class TelaPessoa(Tela):
         if dados_pessoa:
             string_pessoas = ''
             for dados in dados_pessoa:
-                if nome := dados.get('nome'):
-                    string_pessoas += 'Nome: ' + dados['nome'] + '\n'
-                elif razao_social := dados.get('razao_social'):
-                    string_pessoas += 'Razão Social: ' + dados['razao_social'] + '\n'
+                if dados['tipo'] == 'fisica':
+                    string_pessoas += 'Nome: ' + dados['representacao'] + '\n'
+                    string_pessoas += 'CPF: ' + dados['cadastro'] + '\n'
+                else:
+                    string_pessoas += 'Razão Social: ' + dados['representacao'] + '\n'
+                    string_pessoas += 'CNPJ: ' + dados['cadastro'] + '\n'
 
+                string_pessoas += 'Conta: ' + str(dados.get('conta', 'Sem conta cadastrada.')) + '\n'
                 string_pessoas += 'Fone: ' + dados['fone'] + '\n'
-
-                if cpf := dados.get('cpf'):
-                    string_pessoas += 'CPF: ' + cpf + '\n\n'
-                elif cnpj := dados.get('cnpj'):
-                    string_pessoas += 'CNPJ: ' + cnpj + '\n\n'
+                string_pessoas += '------------------------------\n\n'
 
             sg.Popup('-------- USUÁRIOS ----------', string_pessoas)
         else:
@@ -151,7 +143,7 @@ class TelaPessoa(Tela):
     def pega_cadastro(self):
         layout = [
             [sg.Text('-------- SELECIONAR USUÁRIO ----------', font=("Helvica", 25))],
-            [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(29, 1)), sg.InputText('', key='cadastro')],
+            [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(35, 1)), sg.InputText('', key='cadastro')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
         self.__window = sg.Window('Sistema de livros').Layout(layout)
