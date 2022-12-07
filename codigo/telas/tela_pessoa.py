@@ -129,7 +129,6 @@ class TelaPessoa(Tela):
         return dados
 
     def mostra_pessoa(self, dados_pessoa):
-          # fazer aqui tratamento dos dados, caso a entrada seja diferente do esperado
         if dados_pessoa:
             string_todos_amigos = ''
             for dados in dados_pessoa:

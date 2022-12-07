@@ -41,39 +41,79 @@ class TelaConta(Tela):
         layout = [
             [sg.Text('-------- DADOS CONTA ----------', font=("Helvica", 25))],
             [sg.Text('CPF/CNPJ do dono:', size=(15, 1)), sg.InputText('', key='cadastro')],
+            [sg.Text('Saldo da Conta:', size=(15, 1)), sg.InputText('', key='saldo')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
         self.__window = sg.Window('Sistema de livros').Layout(layout)
 
         button, values = self.open()
 
-        cadastro = values['cadastro']
+        if button in (None, 'Cancelar'):
+            self.close()
 
-        if cadastro == '-1':
-            return self.opcoes()
+            return 'cancelar', 'cancelar'
+
+        cadastro = values['cadastro']
+        saldo = values['saldo']
 
         if not (re.match(r'^[0-9]{3}.?[0-9]{3}.?[0-9]{3}-?[0-9]{2}$', cadastro) or re.match(r'^\d{2,3}.?\d{3}.?\d{3}/?\d{4}-?\d{2}$', cadastro)):
             self.mostra_mensagem('CADASTRO INVÁLIDO')
             self.close()
-        else:
-            return cadastro
+            return self.pega_cadastro_dono_conta()
 
-    def pega_saldo_conta(self):
         try:
-            saldo = float(input('Saldo: '))
+            saldo = float(saldo)
             if saldo < 0:
                 raise ValueError
         except ValueError:
-            self.mostra_mensagem('Saldo inválido')
-            return self.pega_saldo_conta()
+            self.mostra_mensagem('SALDO INVÁLIDO')
+            self.close()
+            return self.pega_cadastro_dono_conta()
 
-        return saldo
+        self.close()
+
+        return cadastro, saldo
 
     def mostra_conta(self, dados_contas: list):
-        for dados in dados_contas:
-            print(f'-------CONTA {dados["numero"]}--------')
-            print('Dono: %s' % dados['dono'])
-            print('Saldo: %s' % dados['saldo'])
+        if dados_contas:
+            string_todas_contas = ''
+            for dados in dados_contas:
+                string_todas_contas += 'Dono: ' + dados['dono'] + '\n'
+                string_todas_contas += 'Saldo: ' + str(dados['saldo']) + '\n'
+                string_todas_contas += 'Número: ' + str(dados['numero']) + '\n'
+
+            sg.Popup('-------- CONTAS ----------', string_todas_contas)
+        else:
+            self.mostra_mensagem('Nenhuma conta cadastrada.')
+
+    def pega_numero_conta(self):
+        sg.theme('Reddit')
+        layout = [
+            [sg.Text('-------- SELECIONAR CONTA ----------', font=("Helvica", 25))],
+            [sg.Text('Numero da conta:', size=(15, 1)), sg.InputText('', key='numero')],
+            [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
+        ]
+        self.__window = sg.Window('Sistema de livros').Layout(layout)
+
+        button, values = self.open()
+
+        if button in (None, 'Cancelar'):
+            self.close()
+
+            return 'cancelar'
+
+        numero = values['numero']
+        try:
+            numero_conta = int(numero)
+        except ValueError:
+            self.mostra_mensagem('Número de conta inválido')
+            self.close()
+
+            return self.pega_numero_conta()
+
+        self.close()
+
+        return numero_conta
 
     def init_components(self):
         sg.theme('Reddit')

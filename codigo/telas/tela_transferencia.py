@@ -59,7 +59,7 @@ class TelaTransferencia(Tela):
             numero__destino = int(input('Número da conta de destino: '))
         except ValueError:
             self.mostra_mensagem('Número de conta inválido')
-            return self.pega_numero_conta()
+            return self.pega_numero_contas()
 
         return numero__origem, numero__destino
 

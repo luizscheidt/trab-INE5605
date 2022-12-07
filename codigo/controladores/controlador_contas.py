@@ -43,10 +43,11 @@ class ControladorConta:
         raise ContaInexistenteException
 
     def cadastrar_conta(self):
-        while True:
-            cadastro_dono = self.__tela_contas.pega_cadastro_dono_conta()
-            if cadastro_dono:
-                break
+        cadastro_dono, saldo = self.__tela_contas.pega_cadastro_dono_conta()
+
+        if cadastro_dono == 'cancelar':
+            return self.abre_tela()
+
         try:
             dono = self.__controlador_pessoas.pega_pessoa_por_cadastro(cadastro_dono)
             if dono.conta:
@@ -56,7 +57,6 @@ class ControladorConta:
             self.__tela_contas.mostra_mensagem('ATENÇÃO: Usuário inexistente.')
             return self.cadastrar_conta()
 
-        saldo = self.__tela_contas.pega_saldo_conta()
         numero = self.__gerador_numero.gera_numero()
         conta = ContaCorrente(dono=dono, numero=numero, saldo=saldo)
         self.DAO.add(conta)
@@ -66,9 +66,10 @@ class ControladorConta:
         self.__tela_contas.mostra_mensagem('Conta cadastrada com sucesso.')
 
     def alterar_conta(self):
-        identificador_conta = None
-        while not identificador_conta:
-            identificador_conta = self.__tela_contas.pega_numero_conta()
+        identificador_conta = self.__tela_contas.pega_numero_conta()
+
+        if identificador_conta == 'cancelar':
+            return self.abre_tela()
 
         try:
             conta = self.pega_conta_por_numero(identificador_conta)
@@ -108,9 +109,10 @@ class ControladorConta:
         return self.__tela_contas.mostra_conta(dados_contas)
 
     def excluir_conta(self):
-        identificador_conta = None
-        while not identificador_conta:
-            identificador_conta = self.__tela_contas.pega_numero_conta()
+        identificador_conta = self.__tela_contas.pega_numero_conta()
+
+        if identificador_conta == 'cancelar':
+            return self.abre_tela()
 
         try:
             conta = self.pega_conta_por_numero(identificador_conta)

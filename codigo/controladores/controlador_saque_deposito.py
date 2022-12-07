@@ -3,6 +3,7 @@ from modelos.deposito import Deposito
 from modelos.saque import Saque
 from modelos.data import Data
 from telas.tela_saque_deposito import TelaSaqueDeposito
+from telas.tela_conta import TelaConta
 from DAOs.saque_deposito_dao import SaqueDepositoDAO
 from DAOs.numeros_dao import NumeroDAO
 
@@ -41,9 +42,10 @@ class ControladorSaqueDeposito:
         return depositos
 
     def realizar_operacao(self, tipo):
-        identificador_conta = None
-        while not identificador_conta:
-            identificador_conta = self.__tela.pega_numero_conta()
+        identificador_conta = TelaConta().pega_numero_conta()
+
+        if identificador_conta == 'cancelar':
+            return self.abre_tela()
 
         try:
             conta = self.__controlador_contas.pega_conta_por_numero(identificador_conta)
@@ -110,6 +112,9 @@ class ControladorSaqueDeposito:
     def filtar_operacoes_por_valor(self, tipo):
         operacoes_filtradas = []
         valor_min, valor_max = self.__tela.pega_intervalo_valores()
+
+        if valor_min == 'cancelar':
+            return self.abre_tela()
 
         if tipo == 'saque':
             operacoes = self.saques
