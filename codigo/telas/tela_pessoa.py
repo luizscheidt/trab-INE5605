@@ -151,7 +151,7 @@ class TelaPessoa(Tela):
     def pega_cadastro(self):
         layout = [
             [sg.Text('-------- SELECIONAR USUÁRIO ----------', font=("Helvica", 25))],
-            [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(12, 1)), sg.InputText('', key='cadastro')],
+            [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(29, 1)), sg.InputText('', key='cadastro')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
         self.__window = sg.Window('Sistema de livros').Layout(layout)

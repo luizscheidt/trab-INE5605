@@ -59,8 +59,8 @@ class TelaTransferencia(Tela):
         sg.theme('Reddit')
         layout = [
             [sg.Text('-------- SELECIONAR CONTA ----------', font=("Helvica", 25))],
-            [sg.Text('Numero da conta que transferirá:', size=(15, 1)), sg.InputText('', key='origem')],
-            [sg.Text('Numero da conta que receberá:', size=(15, 1)), sg.InputText('', key='destino')],
+            [sg.Text('Numero da conta que transferirá:', size=(25, 1)), sg.InputText('', key='origem')],
+            [sg.Text('Numero da conta que receberá:', size=(25, 1)), sg.InputText('', key='destino')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
         self.__window = sg.Window('Sistema de livros').Layout(layout)
