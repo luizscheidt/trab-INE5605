@@ -102,7 +102,7 @@ class TelaSaqueDeposito(Tela):
             [sg.Text('Valor Máximo:', size=(15, 1)), sg.InputText('', key='max')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 

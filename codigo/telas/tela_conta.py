@@ -44,7 +44,7 @@ class TelaConta(Tela):
             [sg.Text('Saldo da Conta:', size=(28, 1)), sg.InputText('', key='saldo')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
@@ -93,7 +93,7 @@ class TelaConta(Tela):
             [sg.Text('Numero da conta:', size=(15, 1)), sg.InputText('', key='numero')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
@@ -126,4 +126,4 @@ class TelaConta(Tela):
             [sg.Button('Lista Contas', key='4')],
             [sg.Button('Retornar', key='0')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)

@@ -39,4 +39,4 @@ class TelaSistema(Tela):
             [sg.Button(' Gerenciar Transferências', key='4')],
             [sg.Button('Encerrar', key='0')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)

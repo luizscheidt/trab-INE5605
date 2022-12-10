@@ -63,7 +63,7 @@ class TelaTransferencia(Tela):
             [sg.Text('Numero da conta que receberá:', size=(28, 1)), sg.InputText('', key='destino')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
@@ -126,7 +126,7 @@ class TelaTransferencia(Tela):
             [sg.Text('Valor Máximo:', size=(15, 1)), sg.InputText('', key='max')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 

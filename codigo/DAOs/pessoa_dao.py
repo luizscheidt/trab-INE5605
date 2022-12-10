@@ -9,6 +9,9 @@ class PessoaDAO(DAO):
 
     def add(self, pessoa: Pessoa):
         if pessoa and isinstance(pessoa, (PessoaFisica, PessoaJuridica)) and isinstance(pessoa.cadastro, str):
+            if self.get(pessoa.cadastro):
+                raise PessoaJaCadastradaException
+
             super().add(pessoa.cadastro, pessoa)
 
     def get(self, cadastro: str):
@@ -18,3 +21,7 @@ class PessoaDAO(DAO):
     def remove(selfself, cadastro: str):
         if isinstance(cadastro, str):
             return super().remove(cadastro)
+
+
+class PessoaJaCadastradaException(BaseException):
+    ...

@@ -65,7 +65,7 @@ class TelaPessoa(Tela):
             [sg.Text(representacao, size=(15, 1)), sg.InputText('', key='representacao')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
@@ -132,7 +132,7 @@ class TelaPessoa(Tela):
                     string_pessoas += 'Razão Social: ' + dados['representacao'] + '\n'
                     string_pessoas += 'CNPJ: ' + dados['cadastro'] + '\n'
 
-                string_pessoas += 'Conta: ' + str(dados.get('conta', 'Sem conta cadastrada.')) + '\n'
+                string_pessoas += 'Conta: ' + dados['conta'] + '\n'
                 string_pessoas += 'Fone: ' + dados['fone'] + '\n'
                 string_pessoas += '------------------------------\n\n'
 
@@ -146,7 +146,7 @@ class TelaPessoa(Tela):
             [sg.Text('Entre o numero de registro (CPF/CNPJ):', size=(35, 1)), sg.InputText('', key='cadastro')],
             [sg.Button('Confirmar'), sg.Cancel('Cancelar')]
         ]
-        self.__window = sg.Window('Sistema de livros').Layout(layout)
+        self.__window = sg.Window('Sistema Bancário').Layout(layout)
 
         button, values = self.open()
 
