@@ -113,6 +113,8 @@ class ControladorConta:
         return self.__tela_contas.mostra_conta(dados_contas)
 
     def excluir_conta(self):
+        self.lista_contas()
+
         identificador_conta = self.__tela_contas.pega_numero_conta()
 
         if identificador_conta == 'cancelar':
