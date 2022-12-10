@@ -86,7 +86,7 @@ class ControladorPessoa:
 
         try:
             pessoa = self.pega_pessoa_por_cadastro(cadastro_pessoa)
-            self.lista_pessoa(pessoa)
+            self.mostra_pessoa(pessoa)
         except PessoaInexistenteException:
             self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa inexistente.')
             self.alterar_pessoa()
@@ -100,7 +100,7 @@ class ControladorPessoa:
 
         self.__tela_pessoas.mostra_mensagem('Dados pessoais alterados com sucesso.')
 
-    def lista_pessoa(self, pessoa):
+    def mostra_pessoa(self, pessoa):
         if pessoa.tipo == 'fisica':
             dados_pessoa = {
                 'nome': pessoa.nome,
