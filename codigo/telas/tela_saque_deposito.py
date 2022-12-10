@@ -4,10 +4,9 @@ from .tela import Tela
 TITULO_FILTRAR_VALORES = '-------- FILTRAR VALORES ----------'
 class TelaSaqueDeposito(Tela):
 
-    def __init__(self, controlador_saque_deposito):
+    def __init__(self):
         self.__window = None
         self.init_components()
-        self.__controlador_saque_deposito = controlador_saque_deposito
 
     def init_components(self):
         sg.theme('Reddit')

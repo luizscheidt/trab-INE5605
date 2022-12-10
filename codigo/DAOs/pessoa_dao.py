@@ -18,7 +18,7 @@ class PessoaDAO(DAO):
         if isinstance(cadastro, str):
             return super().get(cadastro)
 
-    def remove(selfself, cadastro: str):
+    def remove(self, cadastro: str):
         if isinstance(cadastro, str):
             return super().remove(cadastro)
 
