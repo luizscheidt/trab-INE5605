@@ -4,8 +4,7 @@ from .tela import Tela
 TITULO_FILTRAR_VALORES = '-------FILTRAR TRANSFERENCIAS------'
 
 class TelaTransferencia(Tela):
-    def __init__(self, controlador_transferencias):
-        self.__controlador_saque_deposito = controlador_transferencias
+    def __init__(self):
         self.__window = None
         self.init_components()
 
