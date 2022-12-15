@@ -117,7 +117,7 @@ class TelaSaqueDeposito(Tela):
             self.mostra_mensagem('Valor inválido')
             self.close()
 
-            return self.pega_valor()
+            return self.pega_intervalo_valores()
 
         if valor_min > valor_max:
             self.mostra_mensagem('Valor mínimo deve ser menor do que o máximo')
@@ -168,7 +168,7 @@ class TelaSaqueDeposito(Tela):
             self.mostra_mensagem('Mês inválido')
             self.close()
 
-            return self.pega_valor()
+            return self.pega_mes()
 
         self.close()
 

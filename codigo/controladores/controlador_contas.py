@@ -43,8 +43,8 @@ class ControladorConta:
         raise ContaInexistenteException
 
     def cadastrar_conta(self):
-        self.__controlador_pessoas.lista_pessoas('fisica')
-        self.__controlador_pessoas.lista_pessoas('juridica')
+        self.__controlador_pessoas.lista_pessoas()
+
         cadastro_dono, saldo = self.__tela_contas.pega_cadastro_dono_conta()
 
         if cadastro_dono == 'cancelar':
@@ -81,14 +81,12 @@ class ControladorConta:
             self.__tela_contas.mostra_mensagem('ATENÇÃO: Conta inexistente.')
             return self.alterar_conta()
 
-        cadastro_dono = self.__tela_contas.pega_cadastro_dono_conta()
+        cadastro_dono, saldo = self.__tela_contas.pega_cadastro_dono_conta()
         try:
             dono = self.__controlador_pessoas.pega_pessoa_por_cadastro(cadastro_dono)
         except PessoaInexistenteException:
             self.__tela_contas.mostra_mensagem('ATENÇÃO: Usuário inexistente.')
             return self.alterar_conta()
-
-        saldo = self.__tela_contas.pega_saldo_conta()
 
         novos_dados = {
             'dono': dono,
@@ -98,6 +96,8 @@ class ControladorConta:
         for atributo, valor in novos_dados.items():
             setattr(conta, atributo, valor)
 
+        dono.conta = conta
+        self.__controlador_pessoas.atualiza_pessoa(dono)
         self.DAO.update(conta.numero, conta)
 
         self.__tela_contas.mostra_mensagem('Dados da conta alterados com sucesso.')

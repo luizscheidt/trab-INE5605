@@ -10,7 +10,7 @@ class ControladorTransferencia:
     def __init__(self, controlador_sistema, controlador_contas):
         self.__controlador_sistema = controlador_sistema
         self.__controlador_contas = controlador_contas
-        self.__tela = TelaTransferencia(self)
+        self.__tela = TelaTransferencia()
         self.__gerador_numero = NumeroTransferencia()
         self.__DAO = TransferenciaDAO()
 
@@ -27,7 +27,7 @@ class ControladorTransferencia:
         id_origem, id_destino = self.__tela.pega_numero_contas()
 
         if id_origem == 'cancelar':
-            return self.realizar_transferencia()
+            return self.abre_tela()
 
         try:
             origem = self.__controlador_contas.pega_conta_por_numero(id_origem)
@@ -44,7 +44,7 @@ class ControladorTransferencia:
 
         valor = self.__tela.pega_valor()
         if valor == 'cancelar':
-            return self.realizar_transferencia()
+            return self.abre_tela()
 
         if valor < origem.saldo:
             origem.saldo -= valor
@@ -63,13 +63,14 @@ class ControladorTransferencia:
     def mostra_operacoes(self, operacoes):
         dados = []
         for operacao in operacoes:
-            dados.append({
-                'valor': operacao.valor,
-                'data': operacao.data,
-                'origem': operacao.origem.numero,
-                'destino': operacao.destino.numero,
-                'tipo': 'Transferência',
-            })
+            if operacao:
+                dados.append({
+                    'valor': operacao.valor,
+                    'data': operacao.data,
+                    'origem': operacao.origem.numero,
+                    'destino': operacao.destino.numero,
+                    'tipo': 'Transferência',
+               })
 
         return self.__tela.lista_operacoes(dados)
 

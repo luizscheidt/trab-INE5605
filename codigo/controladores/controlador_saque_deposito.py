@@ -11,7 +11,7 @@ class ControladorSaqueDeposito:
     def __init__(self, controlador_sistema, controlador_contas):
         self.__controlador_sistema = controlador_sistema
         self.__controlador_contas = controlador_contas
-        self.__tela = TelaSaqueDeposito(self)
+        self.__tela = TelaSaqueDeposito()
         self.__dao = SaqueDepositoDAO()
         self.__gerador_numero = NumeroOperacao()
 

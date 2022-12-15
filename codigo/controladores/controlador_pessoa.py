@@ -101,18 +101,17 @@ class ControladorPessoa:
         self.__tela_pessoas.mostra_mensagem('Dados pessoais alterados com sucesso.')
 
     def mostra_pessoa(self, pessoa):
-        if pessoa.tipo == 'fisica':
-            dados_pessoa = {
-                'nome': pessoa.nome,
-                'cpf': pessoa.cpf,
-                'fone': pessoa.fone,
-            }
-        elif pessoa.tipo == 'juridica':
-            dados_pessoa = {
-                'razao_social': pessoa.razao_social,
-                'cnpj': pessoa.cnpj,
-                'fone': pessoa.fone,
-            }
+        dados_pessoa = {
+            'representacao': pessoa.representacao,
+            'cadastro': pessoa.cadastro,
+            'fone': pessoa.fone,
+            'tipo': pessoa.tipo,
+        }
+
+        if conta := pessoa.conta:
+            dados_pessoa['conta'] = str(conta)
+        else:
+            dados_pessoa['conta'] = 'Sem conta.'
 
         self.__tela_pessoas.mostra_pessoa([dados_pessoa])
 
