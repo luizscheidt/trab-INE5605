@@ -2,11 +2,12 @@ from .data import Data
 from .conta_corrente import ContaCorrente
 
 class Transferencia:
-    def __init__(self, origem: ContaCorrente, destino: ContaCorrente, valor: float, data: Data):
+    def __init__(self, id: int, origem: ContaCorrente, destino: ContaCorrente, valor: float, data: Data):
         self.__valor = valor
         self.__origem = origem
         self.__destino = destino
         self.__data = data
+        self.__id = id
 
     @property
     def origem(self):
@@ -39,3 +40,7 @@ class Transferencia:
     @data.setter
     def data(self, data: float):
         self.__data = data
+
+    @property
+    def id(self):
+        return self.__id

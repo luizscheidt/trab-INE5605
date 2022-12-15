@@ -3,17 +3,49 @@ from modelos.deposito import Deposito
 from modelos.saque import Saque
 from modelos.data import Data
 from telas.tela_saque_deposito import TelaSaqueDeposito
+from telas.tela_conta import TelaConta
+from DAOs.saque_deposito_dao import SaqueDepositoDAO
+from DAOs.numeros_dao import NumeroDAO
 
 class ControladorSaqueDeposito:
     def __init__(self, controlador_sistema, controlador_contas):
         self.__controlador_sistema = controlador_sistema
         self.__controlador_contas = controlador_contas
-        self.__tela = TelaSaqueDeposito(self)
-        self.__saques = []
-        self.__depositos = []
+        self.__tela = TelaSaqueDeposito()
+        self.__dao = SaqueDepositoDAO()
+        self.__gerador_numero = NumeroOperacao()
+
+    @property
+    def DAO(self):
+        return self.__dao
+
+    @property
+    def operacoes(self):
+        return self.DAO.get_all()
+
+    @property
+    def saques(self):
+        saques = []
+        for op in self.operacoes:
+            if op.tipo == 'saque':
+                saques.append(op)
+
+        return saques
+
+    @property
+    def depositos(self):
+        depositos = []
+        for op in self.operacoes:
+            if op.tipo == 'deposito':
+                depositos.append(op)
+
+        return depositos
 
     def realizar_operacao(self, tipo):
-        identificador_conta = self.__tela.pega_numero_conta()
+        identificador_conta = TelaConta().pega_numero_conta()
+
+        if identificador_conta == 'cancelar':
+            return self.abre_tela()
 
         try:
             conta = self.__controlador_contas.pega_conta_por_numero(identificador_conta)
@@ -27,16 +59,19 @@ class ControladorSaqueDeposito:
         if tipo == 'saque':
             if valor < conta.saldo:
                 conta.saldo -= valor
-                saque = Saque(valor=valor, conta=conta, data=Data.hoje())
-                self.__saques.append(saque)
+                id = self.__gerador_numero.gera_numero()
+                saque = Saque(id, valor=valor, conta=conta, data=Data.hoje())
+                self.DAO.add(saque)
             else:
                 self.__tela.mostra_mensagem('SALDO INSUFICIENTE')
                 return self.abre_tela()
         elif tipo == 'deposito':
             conta.saldo += valor
-            deposito = Deposito(valor=valor, conta=conta, data=Data.hoje())
-            self.__depositos.append(deposito)
+            id = self.__gerador_numero.gera_numero()
+            deposito = Deposito(id, valor=valor, conta=conta, data=Data.hoje())
+            self.DAO.add(deposito)
 
+        self.__controlador_contas.atualiza_conta(conta)
         self.__tela.mostra_mensagem('Operação realizada com sucesso')
 
     def realizar_saque(self):
@@ -60,10 +95,11 @@ class ControladorSaqueDeposito:
 
 
     def listar_operacoes(self, tipo):
+        operacoes = []
         if tipo == 'saque':
-            operacoes = self.__saques
+            operacoes = self.saques
         elif tipo == 'deposito':
-            operacoes = self.__depositos
+            operacoes = self.depositos
 
         return self.mostra_operacoes(operacoes)
 
@@ -77,10 +113,13 @@ class ControladorSaqueDeposito:
         operacoes_filtradas = []
         valor_min, valor_max = self.__tela.pega_intervalo_valores()
 
+        if valor_min == 'cancelar':
+            return self.abre_tela()
+
         if tipo == 'saque':
-            operacoes = self.__saques
+            operacoes = self.saques
         elif tipo == 'deposito':
-            operacoes = self.__depositos
+            operacoes = self.depositos
 
         for op in operacoes:
             if valor_min < op.valor and valor_max > op.valor:
@@ -100,9 +139,9 @@ class ControladorSaqueDeposito:
         operacoes_filtradas = []
 
         if tipo == 'saque':
-            operacoes = self.__saques
+            operacoes = self.saques
         elif tipo == 'deposito':
-            operacoes = self.__depositos
+            operacoes = self.depositos
 
         for op in operacoes:
             if mes in op.data:
@@ -135,3 +174,17 @@ class ControladorSaqueDeposito:
         while True:
             funcao_escolhida = opcoes[self.__tela.opcoes()]
             funcao_escolhida()
+
+class NumeroOperacao:
+    def __init__(self):
+        self.__dao = NumeroDAO()
+
+    @property
+    def ultimo_numero(self):
+        numero = self.__dao.get('operacao')
+        return numero
+
+    def gera_numero(self):
+        numero = self.ultimo_numero + 1
+        self.__dao.add('operacao', numero)
+        return numero

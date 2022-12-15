@@ -3,74 +3,70 @@ from modelos.cpf import Cpf, CpfInvalidoException
 from modelos.cnpj import Cnpj, CnpjInvalidoException
 from modelos.pessoa_fisica import PessoaFisica
 from modelos.pessoa_juridica import PessoaJuridica
+from DAOs.pessoa_dao import PessoaDAO, PessoaJaCadastradaException
 
 class ControladorPessoa:
 
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
         self.__tela_pessoas = TelaPessoa()
-        self.__pessoas_juridicas = {}
-        self.__pessoas_fisicas = {}
+        self.__DAO = PessoaDAO()
 
     @property
-    def pessoas_fisicas(self):
-        return self.__pessoas_fisicas
+    def DAO(self):
+        return self.__DAO
 
     @property
-    def pessoas_juridicas(self):
-        return self.__pessoas_juridicas
+    def pessoas(self):
+        return self.DAO.get_all()
 
     @property
-    def pessoas_por_cadastro(self):
-        pessoas_por_cadastro = {}
+    def cadastros(self):
+        cadastros = []
+        for p in self.pessoas:
+            cadastros.append(p.cadastro)
 
-        for cadastro, pessoa in self.__pessoas_fisicas.items():
-            pessoas_por_cadastro[cadastro] = pessoa
-        for cadastro, pessoa in self.__pessoas_juridicas.items():
-            pessoas_por_cadastro[cadastro] = pessoa
-
-        return pessoas_por_cadastro
+    def atualiza_pessoa(self, pessoa):
+        self.DAO.update(pessoa.cadastro, pessoa)
 
     def pessoas_por_tipo(self, tipo):
-        if tipo == 'fisica':
-            return self.__pessoas_fisicas
-        elif tipo == 'juridica':
-            return self.__pessoas_juridicas
+        pessoas_por_tipo = []
+        for p in self.pessoas:
+            if p.tipo == tipo:
+                pessoas_por_tipo.append(p)
+
+        return pessoas_por_tipo
 
     def pega_pessoa_por_cadastro(self, cadastro):
         cadastro = cadastro.replace('.', '').replace('-', '').replace('/', '')
-        pessoas = list(self.__pessoas_fisicas.values()) + list(self.__pessoas_juridicas.values())
-        for pessoa in pessoas:
-            if pessoa.cadastro == cadastro:
-                return pessoa
+        if pessoa := self.DAO.get(cadastro):
+            return pessoa
 
         raise PessoaInexistenteException
 
     def cadastrar_pessoa(self, tipo_pessoa):
         dados_pessoa = self.__tela_pessoas.pega_dados_pessoa(tipo_pessoa)
+        if dados_pessoa == 'cancelar':
+            return self.abre_tela()
 
-        if tipo_pessoa == 'fisica':
-            if dados_pessoa['cpf'] not in self.__pessoas_fisicas:
+        try:
+            if tipo_pessoa == 'fisica':
                 try:
                     pessoa = PessoaFisica(**dados_pessoa)
-                    self.__pessoas_fisicas[pessoa.cpf] = pessoa
+                    self.DAO.add(pessoa)
                 except CpfInvalidoException:
                     self.__tela_pessoas.mostra_mensagem('ATENÇÃO: CPF inválido.')
                     return self.cadastrar_pessoa(tipo_pessoa)
-            else:
-                self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa já cadastrada')
-                return self.cadastrar_pessoa(tipo_pessoa)
-        elif tipo_pessoa == 'juridica':
-            if dados_pessoa['cnpj'] not in self.__pessoas_juridicas:
+            elif tipo_pessoa == 'juridica':
                 try:
                     pessoa = PessoaJuridica(**dados_pessoa)
-                    self.__pessoas_juridicas[pessoa.cnpj] = pessoa
+                    self.DAO.add(pessoa)
                 except CnpjInvalidoException:
                     self.__tela_pessoas.mostra_mensagem('ATENÇÃO: CNPJ inválido.')
                     return self.cadastrar_pessoa(tipo_pessoa)
-            else:
-                self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa já cadastrada')
-                return self.cadastrar_pessoa(tipo_pessoa)
+        except PessoaJaCadastradaException:
+            self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa já cadastrada')
+            return self.cadastrar_pessoa(tipo_pessoa)
 
         self.__tela_pessoas.mostra_mensagem('Pessoa cadastrada com sucesso.')
 
@@ -81,11 +77,16 @@ class ControladorPessoa:
         self.cadastrar_pessoa(tipo_pessoa='juridica')
 
     def alterar_pessoa(self):
+        self.lista_pessoas()
+
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
+
+        if cadastro_pessoa == 'cancelar':
+            return self.abre_tela()
 
         try:
             pessoa = self.pega_pessoa_por_cadastro(cadastro_pessoa)
-            self.lista_pessoa(pessoa)
+            self.mostra_pessoa(pessoa)
         except PessoaInexistenteException:
             self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa inexistente.')
             self.alterar_pessoa()
@@ -95,41 +96,46 @@ class ControladorPessoa:
         for atributo, valor in novos_dados.items():
             setattr(pessoa, atributo, valor)
 
+        self.DAO.update(cadastro_pessoa, pessoa)
+
         self.__tela_pessoas.mostra_mensagem('Dados pessoais alterados com sucesso.')
 
-    def lista_pessoa(self, pessoa):
-        if pessoa.tipo == 'fisica':
-            dados_pessoa = {
-                'nome': pessoa.nome,
-                'cpf': pessoa.cpf,
-            }
-        elif pessoa.tipo == 'juridica':
-            dados_pessoa = {
-                'razao_social': pessoa.razao_social,
-                'cnpj': pessoa.cnpj,
-            }
+    def mostra_pessoa(self, pessoa):
+        dados_pessoa = {
+            'representacao': pessoa.representacao,
+            'cadastro': pessoa.cadastro,
+            'fone': pessoa.fone,
+            'tipo': pessoa.tipo,
+        }
+
+        if conta := pessoa.conta:
+            dados_pessoa['conta'] = str(conta)
+        else:
+            dados_pessoa['conta'] = 'Sem conta.'
 
         self.__tela_pessoas.mostra_pessoa([dados_pessoa])
 
 
-    def lista_pessoas(self, tipo_pessoa):
-        pessoas = self.pessoas_por_tipo(tipo_pessoa)
+    def lista_pessoas(self, tipo_pessoa: str = ''):
+        if tipo_pessoa:
+            pessoas = self.pessoas_por_tipo(tipo_pessoa)
+        else:
+            pessoas = self.pessoas
 
-        if tipo_pessoa == 'fisica':
-            dados_pessoas = [{
-                'nome': pessoa.nome,
-                'cpf': pessoa.cpf,
+        dados_pessoas = []
+        for p in pessoas:
+            dados = {
+                'representacao': p.representacao,
+                'cadastro': p.cadastro,
+                'fone': p.fone,
+                'tipo': p.tipo,
             }
-                for pessoa in pessoas.values()
-            ]
-        elif tipo_pessoa == 'juridica':
-            dados_pessoas = [
-                {
-                'razao_social': pessoa.razao_social,
-                'cnpj': pessoa.cnpj,
-            }
-                for pessoa in pessoas.values()
-            ]
+            if conta := p.conta:
+                dados['conta'] = str(conta.numero)
+            else:
+                dados['conta'] = 'Sem conta.'
+
+            dados_pessoas.append(dados)
 
         self.__tela_pessoas.mostra_pessoa(dados_pessoas)
 
@@ -140,15 +146,20 @@ class ControladorPessoa:
         self.lista_pessoas('juridica')
 
     def excluir_pessoa(self):
+        self.lista_pessoas()
+
         cadastro_pessoa = self.__tela_pessoas.pega_cadastro()
+
+        if cadastro_pessoa == 'cancelar':
+            return self.abre_tela()
 
         try:
             pessoa = self.pega_pessoa_por_cadastro(cadastro_pessoa)
             if pessoa.tipo == 'fisica':
-                self.__pessoas_fisicas.pop(pessoa.cpf, None)
+                self.DAO.remove(cadastro_pessoa)
             elif pessoa.tipo == 'juridica':
-                self.__pessoas_juridicas.pop(pessoa.cnpj, None)
-            self.__tela_pessoas.mostra_mensagem(f'Pessoa excluida com sucesso. {pessoa.nome}, {pessoa.cadastro}')
+                self.DAO.remove(cadastro_pessoa)
+            self.__tela_pessoas.mostra_mensagem(f'Pessoa excluida com sucesso. {pessoa.representacao}, {pessoa.cadastro}')
         except PessoaInexistenteException:
             self.__tela_pessoas.mostra_mensagem('ATENÇÃO: Pessoa inexistente.')
             self.excluir_pessoa()
@@ -163,7 +174,8 @@ class ControladorPessoa:
             3: self.alterar_pessoa,
             4: self.lista_pessoas_fisicas,
             5: self.lista_pessoas_juridicas,
-            6: self.excluir_pessoa,
+            6: self.lista_pessoas,
+            7: self.excluir_pessoa,
             0: self.retornar,
         }
 
@@ -175,6 +187,3 @@ class ControladorPessoa:
 class PessoaInexistenteException(BaseException):
     ...
 
-
-class PessoaJaCadastradaException(BaseException):
-    ...
